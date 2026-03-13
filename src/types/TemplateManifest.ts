@@ -7,6 +7,7 @@ export interface TemplateManifest {
   removes?: string[]; // e.g., ['.env:POSTGRES_URI']
   scripts?: {
     postInstall?: string; // e.g., 'cd apps/frontend && npm install'
+    run?: string;         // e.g., 'cd apps/frontend && npm run dev'
   };
   files: {
     copy: string[];

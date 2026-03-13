@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { registerMigrateCommand } from './commands/migrate';
+import { registerRunCommand } from './commands/run';
 import chalk from 'chalk';
 import * as logger from './utils/logger';
 
@@ -12,6 +13,8 @@ program
 
 // Register the lifecycle management commands exclusively
 registerMigrateCommand(program);
+
+registerRunCommand(program);
 
 program.parseAsync(process.argv).catch((err) => {
   logger.error(err.message);

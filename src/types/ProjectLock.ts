@@ -5,6 +5,7 @@ export interface AppliedTemplate {
   priority: number;
   addedVariables?: string[];
   removes?: string[];
+  scripts?: Record<string, string>;
 }
 
 export interface ProjectLock {

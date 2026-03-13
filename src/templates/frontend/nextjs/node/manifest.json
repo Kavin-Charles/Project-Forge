@@ -4,7 +4,8 @@
   "language": "node",
   "priority": 10,
   "scripts": {
-    "postInstall": "cd apps/frontend && npm install"
+    "postInstall": "cd apps/frontend && npm install",
+    "run": "cd apps/frontend && npm run dev"
   },
   "files": {
     "copy": [

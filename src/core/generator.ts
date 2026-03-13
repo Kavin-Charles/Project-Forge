@@ -129,6 +129,7 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
       priority: t.manifest.priority,
       addedVariables: t.manifest.adds || [],
       removes: t.manifest.removes || [],
+      scripts: t.manifest.scripts || {}
     })),
     lastMigratedAt: new Date().toISOString()
   };
