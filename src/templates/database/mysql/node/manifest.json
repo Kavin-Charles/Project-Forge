@@ -7,7 +7,11 @@
     "copy": [],
     "merge": [],
     "inject": [
-      "apps/backend/README.md"
+      "apps/backend/README.md",
+      "apps/frontend/pages/index.jsx",
+      "apps/frontend/src/App.tsx",
+      "apps/frontend/src/App.vue",
+      "apps/frontend/src/App.svelte"
     ]
   }
 }
