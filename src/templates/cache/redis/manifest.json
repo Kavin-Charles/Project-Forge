@@ -1,0 +1,13 @@
+{
+  "name": "redis",
+  "type": "cache",
+  "language": "generic",
+  "priority": 40,
+  "files": {
+    "copy": [],
+    "merge": [],
+    "inject": [
+      "README.md"
+    ]
+  }
+}

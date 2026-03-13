@@ -1,0 +1,13 @@
+{
+  "name": "swift",
+  "type": "mobile",
+  "language": "swift",
+  "priority": 15,
+  "files": {
+    "copy": [
+      "apps/mobile/ContentView.swift"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "mongodb",
+  "type": "database",
+  "language": "node",
+  "priority": 31,
+  "files": {
+    "copy": [],
+    "merge": [],
+    "inject": [
+      "apps/backend/README.md"
+    ]
+  }
+}

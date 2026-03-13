@@ -1,0 +1,13 @@
+{
+  "name": "svelte-app",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "svelte": "^4",
+    "vite": "^4",
+    "@sveltejs/vite-plugin-svelte": "^2"
+  }
+}

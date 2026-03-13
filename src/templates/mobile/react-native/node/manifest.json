@@ -1,0 +1,14 @@
+{
+  "name": "react-native",
+  "type": "mobile",
+  "language": "node",
+  "priority": 15,
+  "files": {
+    "copy": [
+      "apps/mobile/package.json",
+      "apps/mobile/App.js"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

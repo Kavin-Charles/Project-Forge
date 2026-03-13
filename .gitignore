@@ -1,0 +1,7 @@
+node_modules/
+dist/
+test-ksvin/
+test-ksvin2/
+.env
+.DS_Store
+*.log

@@ -1,0 +1,13 @@
+{
+  "name": "kotlin",
+  "type": "mobile",
+  "language": "kotlin",
+  "priority": 15,
+  "files": {
+    "copy": [
+      "apps/mobile/app/src/main/java/com/example/app/MainActivity.kt"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

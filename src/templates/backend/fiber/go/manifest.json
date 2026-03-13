@@ -1,0 +1,12 @@
+{
+  "name": "fiber",
+  "type": "backend",
+  "language": "go",
+  "priority": 20,
+  "files": {
+    "copy": [
+      "apps/backend/go.mod",
+      "apps/backend/server/main.go"
+    ]
+  }
+}

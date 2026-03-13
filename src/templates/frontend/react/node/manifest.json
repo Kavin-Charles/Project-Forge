@@ -1,0 +1,12 @@
+{
+  "name": "react",
+  "type": "frontend",
+  "language": "node",
+  "priority": 10,
+  "files": {
+    "copy": [
+      "apps/frontend/package.json",
+      "apps/frontend/src/App.tsx"
+    ]
+  }
+}

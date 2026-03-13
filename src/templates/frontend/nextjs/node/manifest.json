@@ -1,0 +1,15 @@
+{
+  "name": "nextjs",
+  "type": "frontend",
+  "language": "node",
+  "priority": 10,
+  "files": {
+    "copy": [
+      "apps/frontend/package.json",
+      "apps/frontend/pages/index.jsx",
+      "apps/frontend/next.config.js"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

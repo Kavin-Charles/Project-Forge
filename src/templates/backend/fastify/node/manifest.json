@@ -1,0 +1,14 @@
+{
+  "name": "fastify",
+  "type": "backend",
+  "language": "node",
+  "priority": 20,
+  "files": {
+    "copy": [
+      "apps/backend/package.json",
+      "apps/backend/src/server.js"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

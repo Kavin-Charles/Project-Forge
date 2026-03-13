@@ -1,0 +1,9 @@
+{
+  "name": "base",
+  "type": "base",
+  "language": "generic",
+  "priority": 0,
+  "files": {
+    "copy": ["README.md", ".gitignore"]
+  }
+}

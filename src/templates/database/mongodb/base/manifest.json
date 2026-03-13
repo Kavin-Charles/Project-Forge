@@ -1,0 +1,10 @@
+{
+  "name": "mongodb",
+  "type": "database",
+  "language": "base",
+  "priority": 30,
+  "files": {
+    "merge": ["infra/docker-compose.yml"],
+    "inject": ["README.md"]
+  }
+}

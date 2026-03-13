@@ -1,0 +1,9 @@
+{
+  "name": "docker",
+  "type": "infra",
+  "language": "docker",
+  "priority": 50,
+  "files": {
+    "merge": ["infra/docker-compose.yml"]
+  }
+}

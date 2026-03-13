@@ -1,0 +1,14 @@
+{
+  "name": "flutter",
+  "type": "mobile",
+  "language": "dart",
+  "priority": 15,
+  "files": {
+    "copy": [
+      "apps/mobile/pubspec.yaml",
+      "apps/mobile/lib/main.dart"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "postgres",
+  "type": "database",
+  "language": "python",
+  "priority": 31,
+  "files": {
+    "copy": [],
+    "merge": [],
+    "inject": [
+      "apps/backend/README.md"
+    ]
+  }
+}

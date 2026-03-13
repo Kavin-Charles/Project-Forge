@@ -1,0 +1,17 @@
+{
+  "name": "svelte",
+  "type": "frontend",
+  "language": "node",
+  "priority": 10,
+  "files": {
+    "copy": [
+      "apps/frontend/package.json",
+      "apps/frontend/index.html",
+      "apps/frontend/vite.config.js",
+      "apps/frontend/src/main.js",
+      "apps/frontend/src/App.svelte"
+    ],
+    "merge": [],
+    "inject": []
+  }
+}
