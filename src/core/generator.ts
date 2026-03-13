@@ -9,23 +9,13 @@ import * as logger from '../utils/logger';
 // When running from dist/core/generator.js, jump up two directories to the root, then into src/templates
 const TEMPLATES_DIR = path.resolve(__dirname, '../../src/templates');
 
-interface ResolvedTemplate {
+export interface ResolvedTemplate {
   manifestPath: string;
   filesDir: string;
   manifest: TemplateManifest;
 }
 
-export async function generateProject(config: ForgeConfig, outputRoot: string): Promise<void> {
-  await fs.ensureDir(outputRoot);
-
-  // Step 3 & 4: Resolve languages for the selected frameworks
-  config.frontendLanguage = resolveLanguage(config.frontend);
-  config.backendLanguage = resolveLanguage(config.backend);
-
-  logger.info(`Resolved frontend language: ${config.frontendLanguage}`);
-  logger.info(`Resolved backend language: ${config.backendLanguage}`);
-
-  // Step 5: Resolve templates to apply
+export async function resolveTemplates(config: ForgeConfig): Promise<ResolvedTemplate[]> {
   const activeTemplates: ResolvedTemplate[] = [];
 
   const addTemplate = async (templatePath: string) => {
@@ -41,26 +31,21 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
     }
   };
 
-  // 1. Base Project Template
   await addTemplate('base');
 
-  // 2. Frontend Template
   if (config.frontend) {
     await addTemplate(`frontend/${config.frontend}/${config.frontendLanguage}`);
   }
 
-  // 3. Backend Template
   if (config.backend) {
     await addTemplate(`backend/${config.backend}/${config.backendLanguage}`);
   }
 
-  // 3.5 Mobile Template
   if (config.mobileFramework) {
     const mobileLang = resolveLanguage(config.mobileFramework);
     await addTemplate(`mobile/${config.mobileFramework}/${mobileLang}`);
   }
 
-  // 4. Database Templates (Layered: Base + Language driver)
   if (config.database && config.database !== 'none') {
     await addTemplate(`database/${config.database}/base`);
     if (config.backendLanguage) {
@@ -68,18 +53,31 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
     }
   }
 
-  // 5. Cache Templates
   if (config.cache && config.cache !== 'none') {
     await addTemplate(`cache/${config.cache}`);
   }
 
-  // 6. Infrastructure Templates
   if (config.dockerSupport) {
     await addTemplate('infra/docker');
   }
 
-  // Step 6: Sort templates by priority (Lowest executes first)
+  // Sort templates by priority (Lowest executes first)
   activeTemplates.sort((a, b) => a.manifest.priority - b.manifest.priority);
+  return activeTemplates;
+}
+
+export async function generateProject(config: ForgeConfig, outputRoot: string): Promise<void> {
+  await fs.ensureDir(outputRoot);
+
+  // Step 3 & 4: Resolve languages for the selected frameworks
+  config.frontendLanguage = resolveLanguage(config.frontend);
+  config.backendLanguage = resolveLanguage(config.backend);
+
+  logger.info(`Resolved frontend language: ${config.frontendLanguage}`);
+  logger.info(`Resolved backend language: ${config.backendLanguage}`);
+
+  // Step 5: Resolve templates to apply
+  const activeTemplates = await resolveTemplates(config);
 
   // Step 7-9: Execute File rules from each manifest
   for (const template of activeTemplates) {
@@ -116,4 +114,24 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
   // Step 10: Finalize Config in new project
   const configPath = path.join(outputRoot, 'forge.config.json');
   await fs.writeJson(configPath, config, { spaces: 2 });
+
+  // Step 11: Create Project Lock
+  const forgeDir = path.join(outputRoot, '.forge');
+  await fs.ensureDir(forgeDir);
+
+  const lockPath = path.join(forgeDir, 'project.lock');
+  const projectLock = {
+    version: '1.0.0',
+    appliedTemplates: activeTemplates.map(t => ({
+      name: t.manifest.name,
+      type: t.manifest.type,
+      language: t.manifest.language,
+      priority: t.manifest.priority,
+      addedVariables: t.manifest.adds || [],
+      removes: t.manifest.removes || [],
+    })),
+    lastMigratedAt: new Date().toISOString()
+  };
+  
+  await fs.writeJson(lockPath, projectLock, { spaces: 2 });
 }
