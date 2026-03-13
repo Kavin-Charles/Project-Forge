@@ -5,6 +5,9 @@ export interface TemplateManifest {
   priority: number; // e.g., base (0), frontend (10), backend (20), database (30), cache (40), infra (50)
   adds?: string[];  // e.g., ['.env:MONGO_URI', 'docker-compose:mongo-service']
   removes?: string[]; // e.g., ['.env:POSTGRES_URI']
+  scripts?: {
+    postInstall?: string; // e.g., 'cd apps/frontend && npm install'
+  };
   files: {
     copy: string[];
     merge: string[];

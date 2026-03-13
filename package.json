@@ -4,7 +4,8 @@
   "description": "Modular project generator with dynamic prompts",
   "main": "dist/index.js",
   "bin": {
-    "forge-gen": "./bin/forge-gen.js"
+    "forge-gen": "./bin/forge-gen.js",
+    "forge": "./bin/forge.js"
   },
   "scripts": {
     "build": "tsc",

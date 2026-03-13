@@ -3,6 +3,9 @@
   "type": "backend",
   "language": "node",
   "priority": 20,
+  "scripts": {
+    "postInstall": "cd apps/backend && npm install"
+  },
   "files": {
     "copy": [
       "apps/backend/package.json",

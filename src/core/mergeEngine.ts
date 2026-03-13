@@ -2,6 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import YAML from 'yaml';
 import * as logger from '../utils/logger';
+import { ForgeConfig } from '../types/ForgeConfig';
+import { interpolateString } from './templateInterpolator';
 
 // --- Deep Merge Logic ---
 
@@ -36,9 +38,18 @@ function deepMerge(target: any, source: any): any {
 
 // --- Strategy specific handlers ---
 
-export async function mergeFile(targetPath: string, sourcePath: string): Promise<void> {
+const TEXT_EXTS = new Set(['.json', '.yml', '.yaml', '.md', '.js', '.ts', '.py', '.go', '.txt', '.html', '.css', '.env', '.mod', '.dart', '.swift', '.kt', '.java', '.jsx', '.tsx']);
+
+function isTextFile(filePath: string): boolean {
+  const ext = path.extname(filePath).toLowerCase();
+  // If no extension (like .env or Dockerfile), treat as text
+  if (!ext) return true;
+  return TEXT_EXTS.has(ext);
+}
+
+export async function mergeFile(targetPath: string, sourcePath: string, config: ForgeConfig): Promise<void> {
   if (!fs.existsSync(targetPath)) {
-    await fs.copy(sourcePath, targetPath);
+    await copyFile(targetPath, sourcePath, config);
     return;
   }
 
@@ -47,13 +58,16 @@ export async function mergeFile(targetPath: string, sourcePath: string): Promise
   try {
     if (ext === '.json') {
       const targetData = await fs.readJson(targetPath);
-      const sourceData = await fs.readJson(sourcePath);
+      let sourceContent = await fs.readFile(sourcePath, 'utf8');
+      sourceContent = interpolateString(sourceContent, config);
+      const sourceData = JSON.parse(sourceContent);
       const merged = deepMerge(targetData, sourceData);
       await fs.writeJson(targetPath, merged, { spaces: 2 });
     } 
     else if (ext === '.yml' || ext === '.yaml') {
       const targetContent = await fs.readFile(targetPath, 'utf8');
-      const sourceContent = await fs.readFile(sourcePath, 'utf8');
+      let sourceContent = await fs.readFile(sourcePath, 'utf8');
+      sourceContent = interpolateString(sourceContent, config);
       const targetData = YAML.parse(targetContent) || {};
       const sourceData = YAML.parse(sourceContent) || {};
       const merged = deepMerge(targetData, sourceData);
@@ -62,7 +76,8 @@ export async function mergeFile(targetPath: string, sourcePath: string): Promise
     else {
       // Basic text append for undefined structured files like .env or go.mod
       const targetContent = await fs.readFile(targetPath, 'utf8');
-      const sourceContent = await fs.readFile(sourcePath, 'utf8');
+      let sourceContent = await fs.readFile(sourcePath, 'utf8');
+      sourceContent = interpolateString(sourceContent, config);
       await fs.writeFile(targetPath, targetContent + '\n' + sourceContent);
     }
   } catch (err: any) {
@@ -70,24 +85,19 @@ export async function mergeFile(targetPath: string, sourcePath: string): Promise
   }
 }
 
-export async function injectFile(targetPath: string, sourcePath: string): Promise<void> {
+export async function injectFile(targetPath: string, sourcePath: string, config: ForgeConfig): Promise<void> {
   if (!fs.existsSync(targetPath)) {
-    await fs.copy(sourcePath, targetPath);
+    await copyFile(targetPath, sourcePath, config);
     return;
   }
 
   const targetContent = await fs.readFile(targetPath, 'utf8');
-  const sourceContent = await fs.readFile(sourcePath, 'utf8');
+  let sourceContent = await fs.readFile(sourcePath, 'utf8');
+  sourceContent = interpolateString(sourceContent, config);
 
-  // We look for markers in the source file, and inject their content into the target file under the same marker.
-  // source file format expected:
-  // # forge:database
-  // MONGO_URI=xxx
-  
   const markerRegex = /(# forge:[a-zA-Z0-9]+)/g;
   const blocks = sourceContent.split(markerRegex);
   
-  // blocks[0] is preamble, blocks[1] is marker, blocks[2] is content, blocks[3] is marker, etc.
   let newTargetContent = targetContent;
   
   for (let i = 1; i < blocks.length; i += 2) {
@@ -108,12 +118,20 @@ export async function injectFile(targetPath: string, sourcePath: string): Promis
   await fs.writeFile(targetPath, newTargetContent);
 }
 
-export async function copyFile(targetPath: string, sourcePath: string): Promise<void> {
+export async function copyFile(targetPath: string, sourcePath: string, config: ForgeConfig): Promise<void> {
   if (fs.existsSync(targetPath)) {
     logger.warn(`Conflict: Overwriting existing file without merge strategy: ${targetPath}`);
   }
   await fs.ensureDir(path.dirname(targetPath));
-  await fs.copy(sourcePath, targetPath, { overwrite: true });
+  
+  if (isTextFile(sourcePath)) {
+    let content = await fs.readFile(sourcePath, 'utf8');
+    content = interpolateString(content, config);
+    await fs.writeFile(targetPath, content);
+  } else {
+    // Binary fallback
+    await fs.copy(sourcePath, targetPath, { overwrite: true });
+  }
 }
 
 // --- Migration Un-Merge Logic ---

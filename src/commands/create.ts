@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import * as path from 'path';
 import { runProjectTypePrompt } from '../prompts/projectTypePrompt';
 import { generateProject } from '../core/generator';
+import { executePostInstallScripts } from '../core/scriptEngine';
 import { ForgeConfig } from '../types/ForgeConfig';
 import * as logger from '../utils/logger';
 
@@ -51,8 +52,10 @@ export function registerCreateCommand(program: Command): void {
 
         spinnerInst = logger.spinner('Generating modular project architecture at ' + outDir + '...');
         
-        await generateProject(finalConfig, outDir);
-
+        const templates = await generateProject(finalConfig, outDir);
+        spinnerInst.text = 'Running post-generation setup...';
+        await executePostInstallScripts(templates, outDir);
+        
         spinnerInst.succeed('Project generated successfully!');
         logger.info('\nFinal Configuration Scope:\n');
         logger.logConfig(finalConfig);

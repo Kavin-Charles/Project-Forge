@@ -66,7 +66,7 @@ export async function resolveTemplates(config: ForgeConfig): Promise<ResolvedTem
   return activeTemplates;
 }
 
-export async function generateProject(config: ForgeConfig, outputRoot: string): Promise<void> {
+export async function generateProject(config: ForgeConfig, outputRoot: string): Promise<ResolvedTemplate[]> {
   await fs.ensureDir(outputRoot);
 
   // Step 3 & 4: Resolve languages for the selected frameworks
@@ -88,7 +88,7 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
       for (const file of template.manifest.files.copy) {
         const sourcePath = path.join(template.filesDir, file);
         const targetPath = path.join(outputRoot, file);
-        await copyFile(targetPath, sourcePath);
+        await copyFile(targetPath, sourcePath, config);
       }
     }
 
@@ -97,7 +97,7 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
       for (const file of template.manifest.files.merge) {
         const sourcePath = path.join(template.filesDir, file);
         const targetPath = path.join(outputRoot, file);
-        await mergeFile(targetPath, sourcePath);
+        await mergeFile(targetPath, sourcePath, config);
       }
     }
 
@@ -106,7 +106,7 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
       for (const file of template.manifest.files.inject) {
         const sourcePath = path.join(template.filesDir, file);
         const targetPath = path.join(outputRoot, file);
-        await injectFile(targetPath, sourcePath);
+        await injectFile(targetPath, sourcePath, config);
       }
     }
   }
@@ -134,4 +134,6 @@ export async function generateProject(config: ForgeConfig, outputRoot: string): 
   };
   
   await fs.writeJson(lockPath, projectLock, { spaces: 2 });
+  
+  return activeTemplates;
 }

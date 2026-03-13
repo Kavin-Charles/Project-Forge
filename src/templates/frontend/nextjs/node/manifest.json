@@ -3,6 +3,9 @@
   "type": "frontend",
   "language": "node",
   "priority": 10,
+  "scripts": {
+    "postInstall": "cd apps/frontend && npm install"
+  },
   "files": {
     "copy": [
       "apps/frontend/package.json",

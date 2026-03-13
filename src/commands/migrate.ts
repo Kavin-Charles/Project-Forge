@@ -8,6 +8,7 @@ import { resolveTemplates, generateProject } from '../core/generator';
 import { computeTemplateDiff } from '../core/diffEngine';
 import { applyRemoves } from '../core/mergeEngine';
 import { createBackup } from '../core/backupEngine';
+import { executePostInstallScripts } from '../core/scriptEngine';
 import * as logger from '../utils/logger';
 
 export function registerMigrateCommand(program: Command): void {
@@ -90,6 +91,12 @@ export function registerMigrateCommand(program: Command): void {
 
         // 5. Generate new templates and rebuild lock file
         await generateProject(targetConfig, projectRoot);
+
+        // 6. Run Post-Install scripts for newly added components
+        if (diff.templatesToAdd.length > 0) {
+          spinnerInst.text = 'Running post-migration setup...';
+          await executePostInstallScripts(diff.templatesToAdd, projectRoot);
+        }
 
         spinnerInst.succeed('Migration completed successfully!');
         logger.info(`\nA backup of the previous state was saved to: ${backupPath}\n`);
